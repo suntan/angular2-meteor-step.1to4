@@ -1,6 +1,6 @@
 # angular2-meteor-step.1to3
 
-＃Step 1 - Static Template 靜態樣板
+# Step 1 - Static Template 靜態樣板
 
 透過Step 0. 的介紹我們已知道Meteor 會自動將Angular 2 所有的View集成one head、one html、one body 標籤的完整的靜態 html，請將 client/app.html 檔案修改如下:
 <ul>
