@@ -1,5 +1,6 @@
 # angular2-meteor-step.1to3
-Step 1 - Static Template 靜態樣板
+
+＃Step 1 - Static Template 靜態樣板
 
 透過Step 0. 的介紹我們已知道Meteor 會自動將Angular 2 所有的View集成one head、one html、one body 標籤的完整的靜態 html，請將 client/app.html 檔案修改如下:
 <ul>
@@ -19,10 +20,11 @@ Step 1 - Static Template 靜態樣板
 
 執行 meteor -p 3002 開啟網頁紀行測試，進入下一步，帶入資料產生動態的 View ( dynamic template ) .
 
-Step 2 - Dynamic Template 動態樣板
+# Step 2 - Dynamic Template 動態樣板
+
 這一步驟 ，還是著重在 Angular 2產生動態網頁(Data Binding)，下一步再介紹Meteor 所帶來的好處。
 
-Data in the View
+# Data in the View
 在 Angular 2 中，View是透過前面提到的編譯解析元件(@Component)塞到指定的tag節點中的，一個頁面可能會有眾多的編譯解析元件，當我們對編譯解析元件作了編輯(存檔)的動作，Angular 2就會針異動重新編譯並且自動對前端重新載入(hot load) 。
 
 編輯 client/app.html 檔案如下 :
@@ -44,7 +46,8 @@ Data in the View
 
 關於Angular expressions 都在angular2/common ( https://angular.io/docs/ts/latest/api/common/ ) 套件中。對於 Angular expressions 必須認識的項目大概是 ngFo、ngIf、 ngClass在第四步驟我們會使用到，後續都會介紹到。
 
-Component as a Controller
+# Component as a Controller
+
 在Angular 1.X 是使用ngController作為組件的控制器，而在Angular 2中在Step 0. 時我們介紹過編譯元組件(@Component) 跟他的Veiw是綁在一起的本身就可以進行Data-Binding。
 
 修改 client/app.ts 將資料模型(Data Model)在Socially應用類別建構(constructor)時進行導入 :
@@ -98,14 +101,16 @@ class Socially {
 
 介紹進行到這裡，仍還是針對 client side 的介紹；下一步將開始介紹 Meteor 與上述功能結合的威力。
 
-Step 3 - Three-Way data binding
+# Step 3 - Three-Way data binding
+
 本教程是參考Meteor官網執行並進行步驟的修正，無意外可保證100%可順利執行，請依照按步執行、理解。
 
 現在我們已經建立了一個簡單的client應用程序，在這一步驟中我們要演示如何讓client side連線到server side 並利用Meteor從MongoDB 資料庫中取得資料。
 
 並且在資料庫中的資料異動(新增、刪除、修改)時，client將會即時更新(Real-time)。
 
-Data Model and Reactivity in Meteor
+# Data Model and Reactivity in Meteor
+
 分散式的Client Code可以非常簡單的透過 Meteor與Server上的資料庫溝通。如果說
 Angular-ish 架構式資料的雙向Data-Binding ( View & Model ) ，那使用Meteor後我們就可以把它稱之為三向資料綁定(3 way data binding - View & Model & Data-Model ) 。
 
@@ -121,7 +126,8 @@ Meteor 對於MongoDB的資料方式，是通過 Mongo.Collection ( 詳細資料�
 . 透過 DDP通訊協定，將上述兩個資料庫進行資料同步。
 . 使用Meteor能更方便的進行微型應用的開發。
 
-Declare a Collection - 定義資料集合
+# Declare a Collection - 定義資料集合
+
 首先，我們在專案根目錄建立一個 collection 資料夾並建立 parties.ts 檔案來存放我們的 parties 集合物件，建立parties.ts 檔案內容如下 :
 
 import {Mongo} from 'meteor/mongo'; 
@@ -133,7 +139,8 @@ Meteor是一個client & server的架構；專案目錄下的client資料夾僅�
 
 我們只撰寫一個Data-Model，但通過Meteor會共構/同步成一個用戶端、一個伺服器端的 javascript 執行腳本。其中的管理工作都是交由Meteor來處理。
 
-Simple Binding to Angular - 簡單的加入Angular中
+# Simple Binding to Angular - 簡單的加入Angular中
+
 我們已經建立了parties資料集合物件，現在我們將他加入到 Step 3. 的用戶端Angular 2應用程序中。在一般情況下，Angular的 ngFor綁定數據是使用單純的物件陣列，而Meteor整合使用MongoDB API中的 find 及 findOne方法讓我們可以直接使用 Parties.find() 來取出資料。
 
 首先修改 client/app.ts 檔案，將引入Parties資料模型 :
@@ -218,7 +225,8 @@ class Socially {
 }
 bootstrap(Socially);
 
-Inserting Parties from the Console - 在主控台進行Parties資料新增
+# Inserting Parties from the Console - 在主控台進行Parties資料新增
+
 我們回顧一下，Step 0. ~ Step3. 我製作了一個Angular 2 app，定義了 parties集合物件並使用*ngFor進行 Data-Bind，於本節我們建立了 collection/parties Model 讓CommonJS各別導入 client/app.ts 與 server/main.ts 進行資料綁定；基本的三方資料綁定已經完成，所以我們回到專案根目錄將應用啟動 meteor -p <port>；並開啟另一個 SSH terminal並切換到專案根目錄執行 "meteor mongo" 指令來操作server-side MongoDB ．
  
 在 meteor mongo 的terminal 進行資料新增 (新增幾筆資料進行) ，輸入指令如下 :
@@ -231,7 +239,8 @@ Inserting Parties from the Console - 在主控台進行Parties資料新增
 新增完成請不要關閉任何視窗，直接用瀏覽器開啟測試位址並 meteor mongo 的terminal 輸入 "db.parties.find({});" 指令進行資料對照
   
 
-Blaze-like Binding to Angular
+# Blaze-like Binding to Angular
+
 按照上述的理解我們將 client/app.ts 整理如下 :
 import 'reflect-metadata';
 import 'zone.js/dist/zone';
@@ -300,8 +309,13 @@ $ meteor -p 3002
 
 開啟瀏覽器可見到初始化的資料呈現在畫面上，也可以開啟另一個 terminal 進到專案根目錄使用 meteor mongo 使用 db.parties.find({}) 指令進行資料庫查詢、新增、刪除來觀察執行情況。
 
-Summary – 概要說明
+# Summary – 概要說明
+
 在本節中的其實是在說明上花了比較多時間，使用Angular2-Meteor 開發的Code少且簡潔、快速:
+
 .  Metor 可以幫助我們快速的在server與client間作資料集合的繫結
+
 .  Angular2-Meteor幫助我們將Mongo collection快速載入到Angular 2 專案中
+
 .  在server 操作資料集合進行畫面資料的初始化
+
