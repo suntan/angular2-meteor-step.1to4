@@ -1,5 +1,21 @@
 # angular2-meteor-step.1to3
 
+請先安裝 Meteor 指令如下:
+
+$ curl https://install.meteor.com/ | sh
+
+下載範例到專案根目錄，以　/usr/src 為例，並變更專案名稱 (以 my-app 為例 )，輸入指令如下 :
+
+$ cd /usr/scr
+$ git clone https://github.com/suntan/angular2-meteor-step.1to3.git
+$ mv angular2-meteor-step.1to3 my-app
+$ cd my-app
+
+用自己喜歡的 port 啟動(以下用1688為例)，輸入指令如下:
+
+$ meteor -p  1688
+
+=============================================================================================
 # Step 1 - Static Template 靜態樣板
 
 透過Step 0. 的介紹我們已知道Meteor 會自動將Angular 2 所有的View集成one head、one html、one body 標籤的完整的靜態 html，請將 client/app.html 檔案修改如下:
