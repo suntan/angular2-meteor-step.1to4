@@ -1,4 +1,4 @@
-# angular2-meteor-step.1to3
+# angular2-meteor-step.1 to 4
 
 請先安裝 Meteor 指令如下:
 
@@ -335,19 +335,231 @@ export function loadParties() {
    Parties.insert方法將區域集合物件parties資料寫入。
 
 修改 server/main.ts 檔案並帶入 oadParties 方法，內容如下 :
+
 import {loadParties} from './load-parties.ts';
  
 Meteor.startup(loadParties);
 
 回到專案根目錄執行以下指令，清除資料，並重新執行應用:
+
 $ meteor reset
 $ meteor -p 3002
 
 開啟瀏覽器可見到初始化的資料呈現在畫面上，也可以開啟另一個 terminal 進到專案根目錄使用 meteor mongo 使用 db.parties.find({}) 指令進行資料庫查詢、新增、刪除來觀察執行情況。
 
+# Step 4 - Adding/removing objects and Angular event handling – 新增/移除資料物件及Angular 事件處理
+完成Setp 3. 後我們的應用已經透過三向資料綁定到client、server；並有一個自動作Data-Bind的UI。所以本節會介紹並演示以下幾項功能 :
+
+. 建立一個Component來進行party 資料物件的新增/刪除
+. 建立並學習有關model-driven (模型驅動)
+. 學習如何使用驅動component method 事件
+. 實作party 資料物件的 新增/ 刪除功能
+
+# Component Architecture – 組件架構
+
+首先切換到專案根目錄，並建立多層目錄，輸入指令如下 :
+
+$ mkdir -p client/imports/parties-form/
+
+# 目錄概觀 : 
+client/ 目錄是我們的 client-side
+client/imports/ 目錄則是我們放置組件的位置
+client/imports/parties-form/ 則代表我們即將建立的 PartiesForm (新增/刪除 party功能)組件存放位置
+
+建立PartiesForm 組件client/imports/parties-form/parties-form.ts檔案，並輸入內容如下:
+
+import 'reflect-metadata';
+import {Component} from 'angular2/core';
+ 
+@Component({
+  selector: 'parties-form',
+  templateUrl: '/client/imports/parties-form/parties-form.html'
+})
+export class PartiesForm { }
+
+建立PartiesForm 組件中所指定的樣板檔案/client/imports/parties-form/parties-form.html，並輸入內容如下:
+
+<form>
+  <label>Name</label>
+  <input type="text">
+  <label>Description</label>
+  <input type="text">
+  <label>Location</label>
+  <input type="text">
+  <button>Add</button>
+</form>
+
+透過以上動作，一個基本的PartiesForm 組件就建立完成了，接下來我們可以就在client/ 目錄下任何地方透過以下方式將PartiesForm 組件進行導入 :
+import {PartiesForm} from 'client/parties-form/parties-form';
+
+接下來我們修改 client/app.ts 如下， 將PartiesForm 組件導入：
+import {Component} from 'angular2/core';
+import {bootstrap} from 'angular2-meteor-auto-bootstrap';
+import {Parties} from '../collections/parties';
+import {PartiesForm} from './imports/parties-form/parties-form';
+ 
+@Component({
+  selector: 'app',
+  templateUrl: 'client/app.html',
+  directives: [PartiesForm]
+})
+class Socially {
+  parties: Mongo.Cursor<Object>;
+
+並且修改client/app.html在導入PartiesForm 組件的頁面中用以下方是來載入，如下所示 :
+<div>
+  <parties-form></parties-form>
+  <ul>
+    <li *ngFor="#party of parties">
+      {{party.name}}
+
+@@看起來，有點像是 .NET、JAVA中的 User Control 的用法-看到熟悉的東西有點小確幸吧. . .哈!
+
+回到專案根目錄用meteor 指令啟動應用；並開啟瀏覽器會看到PartiesForm 組件已作為root component 的directive 進行加載了!
+
+# Angular 2 Forms
+
+Angular 2 的<input> 或者其他輸入型的DOM元素是可以作雙向數據綁定並在多個Client Component中交互傳輸，這是方便開發UI與使用者間的互動行為，在此先略過；因為我們在此要先使用它綁定到更為嚴謹的Model-Driven來實作資料的新增/刪除。
+
+# Model-Driven Forms – 模組驅動
+
+承上所述，我們在此導入 angular/common 中的 FormBuilder 、ControlGroup元件並於載入時建立實體來進行表單欄位(Fields)及控制項封裝檢查，修改 client/imports/parties-form/parties-form.ts 檔案如下 :
+
+import 'reflect-metadata';
+import {Component} from 'angular2/core';
+import {FormBuilder, ControlGroup, Validators} from 'angular2/common';
+import {Parties} from '../../../collections/parties';
+
+@Component({
+  selector: 'parties-form',
+  templateUrl: '/client/imports/parties-form/parties-form.html'
+})
+
+export class PartiesForm {
+  partiesForm: ControlGroup;
+
+    constructor() {
+        var fb = new FormBuilder();
+        this.partiesForm = fb.group({
+            name: ['', Validators.required],
+            description: [''],
+            location: ['', Validators.required]
+        });
+    }
+    addParty(party) {
+        if (this.partiesForm.valid) {
+            Parties.insert({
+                name: party.name,
+                description: party.description,
+                location: party.location
+            });
+            (<Control>this.partiesForm.controls['name']).updateValue('');
+            (<Control>this.partiesForm.controls['description']).updateValue('');
+            (<Control>this.partiesForm.controls['location']).updateValue('');
+        }
+    }
+}
+
+將 /client/imports/parties-form/parties-form.html 樣板檔案對照修改如下 :
+
+<form [ngFormModel]="partiesForm" #f="ngForm" (submit)="addParty(f.value)">
+  <label>Name</label>
+  <input type="text" ngControl="name">
+  <label>Description</label>
+  <input type="text" ngControl="description">
+  <label>Location</label>
+  <input type="text" ngControl="location">
+  <button>Add</button>
+</form>
+
+說明:
+
+. 導入三向資料繫結Data-Model : Partis，供元件操作使用。
+
+. 定義ControlGroup 物件: partiesForm，用以進行使用者控制項群組的驗證與封裝。
+
+.  PartiesForm Clasee 在建構時定義了 FormBuilder 物件對ControlGroup 內的Control進行封裝控制項  
+  的封裝寫法可以是:
+  
+this.partiesForm = fb.build({
+  name: new Control('')
+});
+  或者
+this.partiesForm.controls.name = new Control('');
+  指定初始值的寫法:
+this.partiesForm = fb.build({
+  name: ['Bob']
+});
+
+. 假設name、location為必填欄位，使用 Validators.required 作為控制項的第二檢查參數進行設定。
+
+. 定義 addParty方法並接收變數 party，用this.partiesForm.valid 檢查設定為Validators.required的欄位
+是否都通過檢查，如果是的話則使用 Parties 資料模型進行資料新增；最後將partiesForm.controls 
+控制項值全部清空。
+
+. parties-form.html 中使用 angular/common 的ngFormModel綁定繫結到*.ts中的 partiesForm 封裝表
+ 單。並設定這個 ngForm 為 f 區域變數。並使用 angular/commom 的submit方法並指定呼叫
+addParty 方法且傳入 f.value (表單欄位值，此時會進行 Validators.required 欄位的檢查) 。
+
+. input 欄位以Case By Value的方式帶入ngControl 。
+
+完成上述功能，我們可以開啟應用進行測試，下面我們在Data-Bind的資料列表中加入刪除資料的按鈕來刪除資料，請修改 client/app.ts 檔案如下 :
+
+import 'reflect-metadata';
+import 'zone.js/dist/zone';
+import {Component} from 'angular2/core';
+import {bootstrap} from 'angular2-meteor-auto-bootstrap';
+import {Parties} from '../collections/parties';
+import {PartiesForm} from './imports/parties-form/parties-form';
+
+@Component({
+  selector: 'app',
+  templateUrl: "client/app.html",
+  directives: [PartiesForm]
+})
+
+class Socially {
+  parties: Mongo.Cursor<Object>;
+
+  constructor () {
+    this.parties = Parties.find();
+  }
+  removeParty(party) {
+    Parties.remove(party._id);
+  }
+}
+bootstrap(Socially);
+
+修改app.ts 對應的View檔案 client/app.html 檔案如下:
+
+<div>
+  <parties-form></parties-form>
+  <ul>
+    <li *ngFor="#party of parties">
+      {{party.name}}
+      <p>{{party.description}}</p>
+      <p>{{party.location}}</p>
+      <button (click)="removeParty(party)">X</button>
+    </li>
+  </ul>
+</div>
+
+說明 :
+
+. 在 client/app.ts新增removeParty方法，並傳入 party 變數，使用party._id欄位帶入 Parties.remove進
+  行資料刪除。
+
+. 修改client/app.html 增加<buttom>標籤，並使用 angular/commom 的click方法並指定呼叫
+  removeParty方法並傳入 *ngFor 帶入的 party row data。
+
+
 # Summary – 概要說明
 
 在本節中的其實是在說明上花了比較多時間，使用Angular2-Meteor 開發的Code少且簡潔、快速:
+
+.	使用Angular2 封裝表單與資料繫結並進行資料新增，是一件非常容易的事。
+
+.	使用Meteor資料模型來操作資料庫更輕鬆。
 
 .  Metor 可以幫助我們快速的在server與client間作資料集合的繫結
 
