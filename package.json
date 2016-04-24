@@ -1,17 +1,9 @@
 {
-  "name": "meteor-angular2.0-socially",
-  "version": "1.0.0",
-  "description": "Tutorial is based on building Angular2 UI for a Meteor app called Socially.",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/dotansimha/meteor-angular2.0-socially.git"
+  "name": "socially",
+  "private": true,
+  "scripts": {
+    "start": "meteor run"
   },
-  "author": "Dotan Simha &lt;dotansimha@gmail.com&gt; (http://github.com/dotansimha/)",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/dotansimha/meteor-angular2.0-socially/issues"
-  },
-  "homepage": "https://github.com/dotansimha/meteor-angular2.0-socially#readme",
   "dependencies": {
     "angular2": "^2.0.0-beta.15",
     "angular2-meteor": "^0.5.3",
