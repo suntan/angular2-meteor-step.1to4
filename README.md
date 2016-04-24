@@ -570,8 +570,10 @@ import {PartiesForm} from './imports/parties-form/parties-form';
 class Socially {
 
   parties: Mongo.Cursor<Object>;
+  
 
 並且修改client/app.html在導入PartiesForm 組件的頁面中用以下方是來載入，如下所示 :
+
 
 <div>
 
@@ -585,7 +587,7 @@ class Socially {
       
 
 
-@@ 看起來，有點像是 .NET、JAVA中的 User Control 的用法-看到熟悉的東西有點小確幸吧. . .哈!
+看起來，有點像是 .NET、JAVA中的 User Control 的用法-看到熟悉的東西有點小確幸吧. . .哈!
 
 
 回到專案根目錄用meteor 指令啟動應用；並開啟瀏覽器會看到PartiesForm 組件已作為root component 的directive 進行加載了!
