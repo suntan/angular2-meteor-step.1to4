@@ -583,14 +583,17 @@ class Socially {
   
     <li *ngFor="#party of parties">
     
-      {{party.name}}
+      { {party.name} }
       
+
+
 
 
 看起來，有點像是 .NET、JAVA中的 User Control 的用法-看到熟悉的東西有點小確幸吧. . .哈!
 
 
 回到專案根目錄用meteor 指令啟動應用；並開啟瀏覽器會看到PartiesForm 組件已作為root component 的directive 進行加載了!
+
 
 
 # Angular 2 Forms
