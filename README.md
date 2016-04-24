@@ -39,19 +39,33 @@ $ meteor -p  1688
 # Step 1 - Static Template 靜態樣板
 
 透過Step 0. 的介紹我們已知道Meteor 會自動將Angular 2 所有的View集成one head、one html、one body 標籤的完整的靜態 html，請將 client/app.html 檔案修改如下:
+
 <ul>
+
   <li>
+  
     <span>Dubstep-Free Zone</span>
+    
     <p>
+    
       Can we please just for an evening not listen to dubstep.
+      
     </p>
+    
   </li>
+  
   <li>
+  
     <span>All dubstep all the time</span>
+    
     <p>
+    
       Get it on!
+      
     </p>
+    
   </li>
+  
 </ul>
 
 執行 meteor -p 3002 開啟網頁紀行測試，進入下一步，帶入資料產生動態的 View ( dynamic template ) .
@@ -66,18 +80,28 @@ $ meteor -p  1688
 編輯 client/app.html 檔案如下 :
 
 <div>
+
   <ul>
+  
     <li *ngFor="#party of parties">
+    
       {{party.name}}
+      
       <p>{{party.description}}</p>
+      
       <p>{{party.location}}</p>
+      
     </li>
+    
   </ul>
+  
 </div>
 
 我們使用了Angular的兩個表達式(Angular expressions)，看起來有點像PHP 的 Smarty套件但又不盡相同。
+
 . *ngFor="#party of parties"　，在 li 標籤中新增了 *ngFor屬性，將li當成html樣板，集合物件為 
   parties ，且樣板區域變數的 row 變數為 party 。
+  
 . 在聲明的樣板區域內，以雙大括號帶入區域變中的屬性值 {{party.description}}、{{party.location}}
 
 關於Angular expressions 都在angular2/common ( https://angular.io/docs/ts/latest/api/common/ ) 套件中。對於 Angular expressions 必須認識的項目大概是 ngFo、ngIf、 ngClass在第四步驟我們會使用到，後續都會介紹到。
@@ -89,32 +113,55 @@ $ meteor -p  1688
 修改 client/app.ts 將資料模型(Data Model)在Socially應用類別建構(constructor)時進行導入 :
 
 import 'reflect-metadata';
+
 import 'zone.js/dist/zone';
+
 import {Component} from 'angular2/core';
+
 import {bootstrap} from 'angular2/platform/browser';
 
 @Component({
+
   selector: 'app',
+  
   templateUrl: 'client/app.html'
+  
 })
 
 class Socially {
+
   constructor() {
+  
     this.parties = [
+    
       {'name': 'Dubstep-Free Zone',
+      
         'description': 'Can we please just for an evening not listen to dubstep.',
+        
         'location': 'Palo Alto'
+        
       },
+      
       {'name': 'All dubstep all the time',
+      
         'description': 'Get it on!',
+        
         'location': 'Palo Alto'
+        
       },
+      
       {'name': 'Savage lounging',
+      
         'description': 'Leisure suit required. And only fiercest manners.',
+        
         'location': 'San Francisco'
+        
       }
+      
     ];
+    
   }
+  
 }
 
 bootstrap(Socially);
@@ -124,12 +171,19 @@ bootstrap(Socially);
 $ meteor -p 3002
 
 使用TypeScript的好處其中之一就是可使用通用物件( Generic Object)宣告，以下我們將修改 /client/app.ts 將 parties 屬性宣告為通用物件陣列 :
+
   templateUrl: 'client/app.html'
+  
 })
+
 class Socially {
+
   parties: Array<Object>; 
+  
   constructor() {
+  
     this.parties = [
+    
       {'name': 'Dubstep-Free Zone',
 
 
@@ -157,9 +211,12 @@ Meteor 對於MongoDB的資料方式，是通過 Mongo.Collection ( 詳細資料�
 另外Meteor 的核心還有如下功能 :
 
 . 透過socket進行即時反饋 (real-time reactivity through web sockets)
+
 . 雙資料庫，一個為客戶端端的即時資料庫(暫存/即時)，另一個為伺服器端的正式資料庫，在後面
 　作連動變化。
+　
 . 透過 DDP通訊協定，將上述兩個資料庫進行資料同步。
+
 . 使用Meteor能更方便的進行微型應用的開發。
 
 # Declare a Collection - 定義資料集合
@@ -167,6 +224,7 @@ Meteor 對於MongoDB的資料方式，是通過 Mongo.Collection ( 詳細資料�
 首先，我們在專案根目錄建立一個 collection 資料夾並建立 parties.ts 檔案來存放我們的 parties 集合物件，建立parties.ts 檔案內容如下 :
 
 import {Mongo} from 'meteor/mongo'; 
+
 export var Parties = new Mongo.Collection('parties');
 
 上述 "collection/parties.ts" 檔案將會被 TypeScript 編譯為 ES5，並註冊為一個CommonJS 模組。並且在上述檔案中透過 export 關鍵字告訴CommonJS將其進行編譯導出Parties物件的動作。
@@ -182,17 +240,25 @@ Meteor是一個client & server的架構；專案目錄下的client資料夾僅�
 首先修改 client/app.ts 檔案，將引入Parties資料模型 :
 
 import 'zone.js/dist/zone';
+
 import {Component} from 'angular2/core';
+
 import {bootstrap} from 'angular2/platform/browser';
+
 import {Parties} from '../collections/parties';
  
 @Component({
+
   selector: 'app',
+  
 修改constructor 建構函式中的 parties 變數的賦值方式如下 :
 
   parties: Array<Object>; 
+  
   constructor() {
+  
     this.parties = Parties.find().fetch();
+    
   }
   
 但是如果server-side 的資料變更了，我們如何通知客戶端進行更新呢？
@@ -200,22 +266,39 @@ import {Parties} from '../collections/parties';
 此時則可使用Meteor Tracker ( 參考: https://www.meteor.com/tracker?__hstc=219992390.139adbc00edcdde736161e05a9d1b498.1461260715093.1461342468598.1461349766518.4&__hssc=219992390.1.1461349766518&__hsfp=1819641482 ) ，並加入Angular 2監控更新功能NgZone將client/app.ts 檔案變更內容如下 :
 
 import 'reflect-metadata';
+
 import 'zone.js/dist/zone';
+
 import {NgZone, Component} from 'angular2/core';
+
 import {bootstrap} from 'angular2/bootstrap';
+
 import {Parties} from '../collections/parties';
+
 @Component({
+
   selector: 'app',
+  
   templateUrl: "client/app.html"
+  
 })
+
 class Socially {
+
   parties: Array<Object>;
+  
   constructor (zone: NgZone) {
+  
     Tracker.autorun(() => zone.run(() => {
+    
       this.parties = Parties.find().fetch();
+      
     }));
+    
   }
+  
 }
+
 bootstrap(Socially);
 
 NgZone 是Angular 2 的區域變化檢測機制，zone.run 相當於Angular 1.x的scope.$apply() 方法；在Angular 2 相對比 1.x版本顯得更聰明及快速。至於Zone.js的相關資料可參考此連結 : https://github.com/angular/zone.js 
@@ -240,25 +323,41 @@ meteor npm install angular2-meteor-auto-bootstrap --save
 並修改 client/app.ts 如下:
 
 import 'reflect-metadata';
+
 import 'zone.js/dist/zone';
+
 import {NgZone, Component} from 'angular2/core';
+
 import {bootstrap} from 'angular2-meteor-auto-bootstrap';
+
 /* import {bootstrap} from 'angular2/bootstrap'; */
+
 import {Parties} from '../collections/parties';
 
 @Component({
+
   selector: 'app',
+  
   templateUrl: "client/app.html"
+  
 })
 
 class Socially {
+
   parties: Array<Object>;
+  
   constructor (zone: NgZone) {
+  
     Tracker.autorun(() => zone.run(() => {
+    
       this.parties = Parties.find().fetch();
+      
     }));
+    
   }
+  
 }
+
 bootstrap(Socially);
 
 # Inserting Parties from the Console - 在主控台進行Parties資料新增
@@ -278,24 +377,40 @@ bootstrap(Socially);
 # Blaze-like Binding to Angular
 
 按照上述的理解我們將 client/app.ts 整理如下 :
+
 import 'reflect-metadata';
+
 import 'zone.js/dist/zone';
+
 import {Component} from 'angular2/core';
+
 import {bootstrap} from 'angular2-meteor-auto-bootstrap';
+
 import {Parties} from '../collections/parties';
+
 import {Tracker} from 'meteor/tracker';
+
  
 @Component({
+
   selector: 'app',
+  
   templateUrl: 'client/app.html'
+  
 })
+
 class Socially {
+
   parties: Mongo.Cursor<Object>;
- 
+  
   constructor () {
+  
     this.parties = Parties.find();
+    
   }
+  
 } 
+
 bootstrap(Socially);
 
 看起來是不是簡潔許多，之後的資料操作基本格式大概就這樣確認下來囉!現在再回到專案根目錄下用 meteor 指令啟動應用，當然也可以開啟另一個 SSH terminal並切換到專案根目錄執行 "meteor mongo" 指令來搭配測試執行結果是否相同。
@@ -304,29 +419,47 @@ Initializing Data on Server Side – 在伺服器端進行資料初始化
 我們剛確認往後使用Angular-Meteor的資料繫結與撰寫模式，並且使用Mongo console進行了資料新增、修改、刪除來測試我們的[三向資料綁定]。這一節我們將在伺服器端寫入一些資料使客戶端進入時就可以看到。
 
 於server 資料夾內新增 load-parties.ts 檔案，並使用 export 並導出名為 loadParties 的方法，內容如下 :
+
 import {Parties} from '../collections/parties.ts';
  
 export function loadParties() {
+
   if (Parties.find().count() === 0) {
  
     var parties = [ {
+    
         'name': 'Dubstep-Free Zone',
+        
         'description': 'Can we please just for an evening not listen to dubstep.',
+        
         'location': 'Palo Alto'
+        
       }, {
+      
         'name': 'All dubstep all the time',
+        
         'description': 'Get it on!',
+        
         'location': 'Palo Alto'
+        
       }, {
+      
         'name': 'Savage lounging',
+        
         'description': 'Leisure suit required. And only fiercest manners.',
+        
         'location': 'San Francisco'
+        
       }];
  
     for (var i = 0; i < parties.length; i++) {
+    
       Parties.insert(parties[i]);
+      
     }
+    
   }
+  
 };
 
 1.  /collections/parties.ts 導出的 Parties是 Mongo.Collection('parties') 集合物件。
@@ -343,11 +476,13 @@ Meteor.startup(loadParties);
 回到專案根目錄執行以下指令，清除資料，並重新執行應用:
 
 $ meteor reset
+
 $ meteor -p 3002
 
 開啟瀏覽器可見到初始化的資料呈現在畫面上，也可以開啟另一個 terminal 進到專案根目錄使用 meteor mongo 使用 db.parties.find({}) 指令進行資料庫查詢、新增、刪除來觀察執行情況。
 
 # Step 4 - Adding/removing objects and Angular event handling – 新增/移除資料物件及Angular 事件處理
+
 完成Setp 3. 後我們的應用已經透過三向資料綁定到client、server；並有一個自動作Data-Bind的UI。所以本節會介紹並演示以下幾項功能 :
 
 . 建立一個Component來進行party 資料物件的新增/刪除
@@ -362,58 +497,89 @@ $ meteor -p 3002
 $ mkdir -p client/imports/parties-form/
 
 # 目錄概觀 : 
+
 client/ 目錄是我們的 client-side
+
 client/imports/ 目錄則是我們放置組件的位置
+
 client/imports/parties-form/ 則代表我們即將建立的 PartiesForm (新增/刪除 party功能)組件存放位置
 
 建立PartiesForm 組件client/imports/parties-form/parties-form.ts檔案，並輸入內容如下:
 
 import 'reflect-metadata';
+
 import {Component} from 'angular2/core';
  
 @Component({
+
   selector: 'parties-form',
+  
   templateUrl: '/client/imports/parties-form/parties-form.html'
+  
 })
+
 export class PartiesForm { }
 
 建立PartiesForm 組件中所指定的樣板檔案/client/imports/parties-form/parties-form.html，並輸入內容如下:
 
 <form>
+
   <label>Name</label>
+  
   <input type="text">
+  
   <label>Description</label>
+  
   <input type="text">
+  
   <label>Location</label>
+  
   <input type="text">
+  
   <button>Add</button>
+  
 </form>
 
 透過以上動作，一個基本的PartiesForm 組件就建立完成了，接下來我們可以就在client/ 目錄下任何地方透過以下方式將PartiesForm 組件進行導入 :
 import {PartiesForm} from 'client/parties-form/parties-form';
 
 接下來我們修改 client/app.ts 如下， 將PartiesForm 組件導入：
+
 import {Component} from 'angular2/core';
+
 import {bootstrap} from 'angular2-meteor-auto-bootstrap';
+
 import {Parties} from '../collections/parties';
+
 import {PartiesForm} from './imports/parties-form/parties-form';
- 
+
 @Component({
+
   selector: 'app',
+  
   templateUrl: 'client/app.html',
+  
   directives: [PartiesForm]
+  
 })
+
 class Socially {
+
   parties: Mongo.Cursor<Object>;
 
 並且修改client/app.html在導入PartiesForm 組件的頁面中用以下方是來載入，如下所示 :
+
 <div>
+
   <parties-form></parties-form>
+  
   <ul>
+  
     <li *ngFor="#party of parties">
+    
       {{party.name}}
 
-@@看起來，有點像是 .NET、JAVA中的 User Control 的用法-看到熟悉的東西有點小確幸吧. . .哈!
+@@ 看起來，有點像是 .NET、JAVA中的 User Control 的用法-看到熟悉的東西有點小確幸吧. . .哈!
 
 回到專案根目錄用meteor 指令啟動應用；並開啟瀏覽器會看到PartiesForm 組件已作為root component 的directive 進行加載了!
 
@@ -426,50 +592,84 @@ Angular 2 的<input> 或者其他輸入型的DOM元素是可以作雙向數據�
 承上所述，我們在此導入 angular/common 中的 FormBuilder 、ControlGroup元件並於載入時建立實體來進行表單欄位(Fields)及控制項封裝檢查，修改 client/imports/parties-form/parties-form.ts 檔案如下 :
 
 import 'reflect-metadata';
+
 import {Component} from 'angular2/core';
+
 import {FormBuilder, ControlGroup, Validators} from 'angular2/common';
+
 import {Parties} from '../../../collections/parties';
 
 @Component({
+
   selector: 'parties-form',
+  
   templateUrl: '/client/imports/parties-form/parties-form.html'
+  
 })
 
 export class PartiesForm {
+
   partiesForm: ControlGroup;
 
     constructor() {
+    
         var fb = new FormBuilder();
+        
         this.partiesForm = fb.group({
+        
             name: ['', Validators.required],
+            
             description: [''],
+            
             location: ['', Validators.required]
+            
         });
+        
     }
     addParty(party) {
+    
         if (this.partiesForm.valid) {
+        
             Parties.insert({
+            
                 name: party.name,
+                
                 description: party.description,
+                
                 location: party.location
+                
             });
+            
             (<Control>this.partiesForm.controls['name']).updateValue('');
+            
             (<Control>this.partiesForm.controls['description']).updateValue('');
+            
             (<Control>this.partiesForm.controls['location']).updateValue('');
+            
         }
+        
     }
 }
+
 
 將 /client/imports/parties-form/parties-form.html 樣板檔案對照修改如下 :
 
 <form [ngFormModel]="partiesForm" #f="ngForm" (submit)="addParty(f.value)">
+
   <label>Name</label>
+  
   <input type="text" ngControl="name">
+  
   <label>Description</label>
+  
   <input type="text" ngControl="description">
+  
   <label>Location</label>
+  
   <input type="text" ngControl="location">
+  
   <button>Add</button>
+  
 </form>
 
 說明:
@@ -482,13 +682,21 @@ export class PartiesForm {
   的封裝寫法可以是:
   
 this.partiesForm = fb.build({
+
   name: new Control('')
+  
 });
+
   或者
+  
 this.partiesForm.controls.name = new Control('');
+
   指定初始值的寫法:
+  
 this.partiesForm = fb.build({
+
   name: ['Bob']
+  
 });
 
 . 假設name、location為必填欄位，使用 Validators.required 作為控制項的第二檢查參數進行設定。
@@ -506,42 +714,68 @@ addParty 方法且傳入 f.value (表單欄位值，此時會進行 Validators.r
 完成上述功能，我們可以開啟應用進行測試，下面我們在Data-Bind的資料列表中加入刪除資料的按鈕來刪除資料，請修改 client/app.ts 檔案如下 :
 
 import 'reflect-metadata';
+
 import 'zone.js/dist/zone';
+
 import {Component} from 'angular2/core';
+
 import {bootstrap} from 'angular2-meteor-auto-bootstrap';
+
 import {Parties} from '../collections/parties';
+
 import {PartiesForm} from './imports/parties-form/parties-form';
 
+
 @Component({
+
   selector: 'app',
+  
   templateUrl: "client/app.html",
+  
   directives: [PartiesForm]
+  
 })
 
 class Socially {
-  parties: Mongo.Cursor<Object>;
 
+  parties: Mongo.Cursor<Object>;
+  
   constructor () {
+  
     this.parties = Parties.find();
+    
   }
   removeParty(party) {
+  
     Parties.remove(party._id);
+    
   }
+  
 }
 bootstrap(Socially);
 
 修改app.ts 對應的View檔案 client/app.html 檔案如下:
 
 <div>
+
   <parties-form></parties-form>
+  
   <ul>
+  
     <li *ngFor="#party of parties">
+    
       {{party.name}}
+      
       <p>{{party.description}}</p>
+      
       <p>{{party.location}}</p>
+      
       <button (click)="removeParty(party)">X</button>
+      
     </li>
+    
   </ul>
+  
 </div>
 
 說明 :
