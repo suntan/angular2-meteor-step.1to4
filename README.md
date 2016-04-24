@@ -7,16 +7,27 @@ $ curl https://install.meteor.com/ | sh
 下載範例到專案根目錄，以　/usr/src 為例，並變更專案名稱 (以 my-app 為例 )，輸入指令如下 :
 
 $ cd /usr/scr
+
 $ git clone https://github.com/suntan/angular2-meteor-step.1to3.git
+
 $ mv angular2-meteor-step.1to3 my-app
+
 $ cd my-app
+
 $ meteor add angular2-compilers
+
 $ meteor npm install --save angular2-meteor
+
 $ meteor npm install --save meteor-node-stubs
+
 $ meteor remove blaze-html-templates
+
 $ npm install typings -g
+
 $ typings install es6-promise
+
 $ typings install es6-shim --ambient
+
 $ meteor npm install angular2-meteor-auto-bootstrap --save
 
 
