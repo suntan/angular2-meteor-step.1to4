@@ -1,4 +1,4 @@
-# angular2-meteor-step.1 to 3
+# angular2-meteor-step.1 to 4
 
 請先安裝 Meteor 指令如下:
 
