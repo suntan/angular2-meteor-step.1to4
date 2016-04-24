@@ -520,7 +520,9 @@ import {Component} from 'angular2/core';
 
 export class PartiesForm { }
 
+
 建立PartiesForm 組件中所指定的樣板檔案/client/imports/parties-form/parties-form.html，並輸入內容如下:
+
 
 <form>
 
@@ -543,7 +545,9 @@ export class PartiesForm { }
 透過以上動作，一個基本的PartiesForm 組件就建立完成了，接下來我們可以就在client/ 目錄下任何地方透過以下方式將PartiesForm 組件進行導入 :
 import {PartiesForm} from 'client/parties-form/parties-form';
 
+
 接下來我們修改 client/app.ts 如下， 將PartiesForm 組件導入：
+
 
 import {Component} from 'angular2/core';
 
@@ -578,14 +582,19 @@ class Socially {
     <li *ngFor="#party of parties">
     
       {{party.name}}
+      
+
 
 @@ 看起來，有點像是 .NET、JAVA中的 User Control 的用法-看到熟悉的東西有點小確幸吧. . .哈!
 
+
 回到專案根目錄用meteor 指令啟動應用；並開啟瀏覽器會看到PartiesForm 組件已作為root component 的directive 進行加載了!
+
 
 # Angular 2 Forms
 
 Angular 2 的<input> 或者其他輸入型的DOM元素是可以作雙向數據綁定並在多個Client Component中交互傳輸，這是方便開發UI與使用者間的互動行為，在此先略過；因為我們在此要先使用它綁定到更為嚴謹的Model-Driven來實作資料的新增/刪除。
+
 
 # Model-Driven Forms – 模組驅動
 
@@ -672,6 +681,7 @@ export class PartiesForm {
   
 </form>
 
+
 說明:
 
 . 導入三向資料繫結Data-Model : Partis，供元件操作使用。
@@ -699,6 +709,8 @@ this.partiesForm = fb.build({
   
 });
 
+
+
 . 假設name、location為必填欄位，使用 Validators.required 作為控制項的第二檢查參數進行設定。
 
 . 定義 addParty方法並接收變數 party，用this.partiesForm.valid 檢查設定為Validators.required的欄位
@@ -710,6 +722,8 @@ this.partiesForm = fb.build({
 addParty 方法且傳入 f.value (表單欄位值，此時會進行 Validators.required 欄位的檢查) 。
 
 . input 欄位以Case By Value的方式帶入ngControl 。
+
+
 
 完成上述功能，我們可以開啟應用進行測試，下面我們在Data-Bind的資料列表中加入刪除資料的按鈕來刪除資料，請修改 client/app.ts 檔案如下 :
 
@@ -752,6 +766,7 @@ class Socially {
   }
   
 }
+
 bootstrap(Socially);
 
 修改app.ts 對應的View檔案 client/app.html 檔案如下:
